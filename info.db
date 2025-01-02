@@ -128,3 +128,118 @@ db.product.find({$nor : [{'price' : {$gt : 100}},{'name' : 'Dimand ring'}] })
 // not 
 db.product.find({$not : [{'price' : {$gt : 100}},{'name' : 'Dimand ring'}] })
 
+
+// update method 
+// update one 
+db.product.updateOne({name : 'watch'},{$set: {'price : 3000'}});
+
+// update many
+db.product.updateMany({name : 'watch'},{$set: {'price : 3000'}});
+
+// rename 
+db.product.updateMany({price : 300},{$rename : {'fullname' : 'Fullname'}})
+
+
+// aggregation
+https://www.mongodb.com/docs/v6.0/reference/operator/aggregation/group/#considerations
+
+// $match
+// return all data that name is bhautik 
+db.products.aggregate([ {$match : {'name' : 'Bhautik'}} ])
+
+db.products.aggregate([ {$match : {'price' : {$gt : 1250}}} ])
+
+// group 
+db.products.aggregate([ 
+    {
+        $group : {
+        _id : "$company",
+        totalProducts : {$sum : 1}
+        }
+    }
+ ]);
+
+////////////////////////
+
+db.products.aggregate([ 
+    {
+        $group : {
+        _id : "$company",
+        totalProducts : {$sum : "$price"}
+        }
+    }
+ ]);
+
+///////////////////////
+
+db.products.aggregate([ 
+    {
+        $match : {price : {$gt : 900}}
+    },
+    {
+        $group : {
+        _id : "$company",
+        totalProducts : {$sum : "$price"}
+        }
+    }
+ ]);
+
+
+////////////////////////
+
+// sorting 
+// $sort 
+
+db.products.aggregate([ 
+    {
+        $match : {price : {$gt : 1200}}
+    },
+    {
+        $group : {
+        _id : "$category",
+        totalProducts : {$sum : "$price"}
+        }
+    }
+    {
+        $sort : {totalPrice : 1}
+    }
+ ]);
+
+////////////////////////
+
+// $project 
+
+db.products.aggregate([
+    {
+        $project : {
+            price : 1
+        }
+    }
+])
+
+////////////////////////
+
+db.products.aggregate([
+    {
+        $project : {
+            price : 1,
+            _id : 0
+        }
+    }
+])
+
+////////////////////////
+
+$push 
+
+db.products.aggregate([
+    {
+        $match : {price : {$gt : 1200}}
+    },
+    {
+        $group : {
+            _id : '$price',
+            alllColors : {$push : '$colors'}
+        }
+    }
+])
